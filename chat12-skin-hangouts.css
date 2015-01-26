@@ -12,15 +12,29 @@
   font-family: 'Typicons', sans-serif;
 }*/
 .chat-zone {
+  z-index: 1040;
   position:fixed;
   bottom:0;
   right:0;
   line-height: initial;
   font-family:arial,sans-serif;
+
+  /* to get childs align on bottom, even if they are floating ! */
+  display: -webkit-inline-flex;
+  display: -moz-inline-flex;
+  display: inline-flex;
+
+  -webkit-flex-flow: row nowrap;
+  -moz-flex-flow: row nowrap;
+  flex-flow: row nowrap;
+
+  -webkit-align-items: flex-end;
+  -moz-align-items: flex-end;
+  align-items: flex-end;
 }
 .chat-container {
   width: 300px;
-  margin: 20px 20px 0 0;
+  margin: 0px 20px 0 0;
   //position:fixed;
   position:relative;
   float: right;
@@ -187,6 +201,7 @@
 }
 .setting i {
   margin-left: 8px;
+  cursor: Pointer;
 }
 /*.iconicstroke-user{
   font-size: 22px;

@@ -1,8 +1,20 @@
+<template name="chatContactList">
+  <ol class="{{getListClass}}">
+    {{#each getContacts}}
+      {{> chat12Contact}}
+    {{/each}}
+  </ol>
+</template>
+
+<template name="chat12Contact">
+  <li>
+    <div class='avatar-icon'>{{#if chat12GetContactAvatar this}}<img src='{{chat12GetContactAvatar this}}'>{{/if}}</div>
+    <div class='chat12ContactName'>{{chat12GetContactName this}}</div>
+  </li>  
+</template>
+
 <template name="chatZoneBottom">
-  <div class="chat-zone">
-    {{>chatContainer}}
-    {{>chatContainer}}
-  </div>
+  <div id="chat12Zone" class="chat-zone"></div>
 </template>
 
 <template name="chatMessage">
@@ -20,7 +32,7 @@
     <header class='top-header'>
       <div class='left'>
         <i class="fa fa-comments-o"></i>
-        <span class='top-header-tit'>Hangouts</span>
+        <span class='top-header-tit'>{{chat12GetContactName this}}</span>
       </div>
       <div class='right'>
         <i class="fa fa-minus clickable buttonMinimize"></i>
