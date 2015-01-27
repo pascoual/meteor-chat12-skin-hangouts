@@ -10,26 +10,17 @@
   <li>
     <div class='avatar-icon'>{{#if chat12GetContactAvatar this}}<img src='{{chat12GetContactAvatar this}}'>{{/if}}</div>
     <div class='chat12ContactName'>{{chat12GetContactName this}}</div>
-  </li>  
+  </li>
 </template>
 
 <template name="chatZoneBottom">
   <div id="chat12Zone" class="chat-zone"></div>
 </template>
 
-<template name="chatMessage">
-  <li class='another'>
-    <div class='avatar-icon'><img src='icon1.png'></div>
-    <div class='messages'>
-      <p>hi how are you. When you come to home.</p>
-      <time datetime='2009-11-13T20:00'>Timothy • 51 min</time>
-    </div>
-  </li>
-</template>
-
 <template name="chatContainer">
+{{#with getContact _id}}
   <section class='chat-container'>
-    <header class='top-header'>
+    <header class='top-header {{#if status.online}}connected{{/if}} {{#if hasUnreadMsg}}unread{{/if}}'>
       <div class='left'>
         <i class="fa fa-comments-o"></i>
         <span class='top-header-tit'>{{chat12GetContactName this}}</span>
@@ -51,65 +42,23 @@
     </div>
 
     <ol class='chat-box'>
-      {{> chatMessage}}
-      <li class='another'>
-        <div class='avatar-icon'><img src='icon1.png'></div>
-        <div class='messages'>
-          <p>hi how are you. When you come to home.</p>
-          <time datetime='2009-11-13T20:00'>Timothy • 51 min</time>
-        </div>
-      </li>
-      <li class='me'>
-      <div class='avatar-icon'>
-        <img src='icon2.png'>
-      </div>
-      <div class='messages'>
-        <p>Hi fine bro.</p>
-        <p>Tomorrow morning i will rech.</p>
-        <time datetime='2009-11-13T20:14'>37 mins</time>
-      </div>
-      </li>
-      <li class='another'>
-      <div class='avatar-icon'>
-        <img src='icon3.png'>
-      </div>
-      <div class='messages'>
-        <p>hi happy to welcome you.</p>
-        <p>I bring some dress for you.</p>
-      </div>
-      </li>
-
-      <li class='me'>
-      <div class='avatar-icon'>
-        <img src='icon2.png'>
-      </div>
-      <div class='messages'>
-        <p>I will come and pickup you.</p>
-        <p>what the time you will reach.</p>
-        <time datetime='2009-11-13T20:14'>37 mins</time>
-      </div>
-      </li>
-      <li class='another'>
-      <div class='avatar-icon'>
-        <img src='icon1.png'>
-      </div>
-      <div class='messages'>
-        <p>i will not know exact time i come arround 8'O colock </p>
-        <time datetime='2009-11-13T20:00'>Timothy • 51 min</time>
-      </div>
-      </li>
-      <li class='another'>
-      <div class='avatar-icon'>
-        <img src='icon3.png'>
-      </div>
-      <div class='messages'>
-        <p>Ok buy Bro....</p>
-        <p>See you tomorrow Morning.</p>
-      </div>
-      </li>
+      {{#each getMessages}}
+        {{> chatMessage}}
+      {{/each}}
     </ol>
     <div class="messagebox">
-      <input type="text" name="message" class="messageInput">
+      <form class="chat12MessageSendForm"><input type="text" name="message" class="chat12MessageInput"></form>
     </div>
   </section>
+{{/with}}
+</template>
+
+<template name="chatMessage">
+  <li class='{{#if chat12Itsme from}}me{{else}}another{{/if}}'>
+    {{#if chat12GetContactAvatar from}}<div class='avatar-icon'><img src='{{chat12GetContactAvatar from}}'></div>{{/if}}
+    <div class='messages'>
+      <p>{{msg}}</p>
+      <time datetime='{{date}}'>{{chat12GetContactName from}} • {{getCalendarDate date}}</time>
+    </div>
+  </li>
 </template>
