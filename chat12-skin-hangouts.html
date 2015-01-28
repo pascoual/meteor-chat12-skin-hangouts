@@ -19,7 +19,7 @@
 
 <template name="chatContainer">
 {{#with getContact _id}}
-  <section class='chat-container'>
+<section id="chat-container-{{_id}}" class='chat-container'>
     <header class='top-header {{#if status.online}}connected{{/if}} {{#if hasUnreadMsg}}unread{{/if}}'>
       <div class='left'>
         <i class="fa fa-comments-o"></i>

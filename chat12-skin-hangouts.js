@@ -21,6 +21,16 @@ Template.registerHelper("chat12Itsme", function (user) {
 });
 
 /**
+ * Global tools
+ */
+Chat12.createChatContainer = function (to) {
+  if (typeof to === "string")
+    to = Meteor.users.findOne({_id: to});
+  if ($('#chat-container-' + to._id).length === 0)
+    Blaze.renderWithData(Template.chatContainer, to, document.getElementById("chat12Zone"));
+}
+
+/**
  * chatContactList
  */
 Template.chatContactList.helpers({
@@ -37,7 +47,7 @@ Template.chatContactList.helpers({
  */
 Template.chat12Contact.events({
   'click li': function (event, tmpl) {
-    Blaze.renderWithData(Template.chatContainer, tmpl.data, document.getElementById("chat12Zone"));
+    Chat12.createChatContainer(tmpl.data);
   }
 });
 
@@ -46,7 +56,19 @@ Template.chat12Contact.events({
  */
 Template.chatZoneBottom.created = function () {
   // subscribe
-  this.subscriptions = [Meteor.subscribe("chat12GetOnes")];
+  this.subscriptions = [
+    Meteor.subscribe("chat12GetOnes"),
+    Meteor.subscribe("chat12GetUnreadMessages")
+  ];
+  Chat12.Chat121Msgs.find({
+    to: Meteor.userId(),
+    readBy: {$nin: [Meteor.userId()]}
+  }).observe({
+    added: function (doc) {
+      // if chat div for doc.from does not exist => create it !
+      Chat12.createChatContainer(doc.from);
+    }
+  });
 };
 
 Template.chatZoneBottom.destroyed = function () {
