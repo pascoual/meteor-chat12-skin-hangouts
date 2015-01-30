@@ -6,13 +6,22 @@ Template.registerHelper("chat12GetContactName", function (user) {
     user = Meteor.users.findOne({_id: user}); 
   return Chat12.getContactName(user);
 });
-Template.registerHelper("chat12GetContactAvatar", function (user) {
+Template.registerHelper("chat12GetContactPortrait", function (user) {
   if (typeof user === "string")
-    user = Meteor.users.findOne({_id: user}); 
-  return Chat12.getContactAvatar(user);
+    user = Meteor.users.findOne({_id: user});
+  return Chat12.getContactPortrait(user);
 });
-Template.registerHelper("chat12GetUnreadNumber", function () {
-  return 0;
+Template.registerHelper("chat12GetRoomPortrait", function (room) {
+  return Chat12.getRoomPortrait(room);
+});
+Template.registerHelper("chat12GetContactDescription", function (user) {
+  if (typeof user === "string")
+    user = Meteor.users.findOne({_id: user});
+  return Chat12.getContactDescription(user);
+});
+Template.registerHelper("chat12GetUnreadNumber", function (from) {
+  from = from ? {from: from} : {};
+  return Chat12.Chat121Msgs.find(_.extend({to: Meteor.userId(), readBy: {$nin: [Meteor.userId()]}}, from)).count();
 });
 Template.registerHelper("chat12Itsme", function (user) {
   if (typeof user === "string")
@@ -27,19 +36,31 @@ Chat12.createChatContainer = function (to) {
   if (typeof to === "string")
     to = Meteor.users.findOne({_id: to});
   if ($('#chat-container-' + to._id).length === 0)
-    Blaze.renderWithData(Template.chatContainer, to, document.getElementById("chat12Zone"));
+    Chat12.openedViews[to._id] = Blaze.renderWithData(Template.chatContainer, to, document.getElementById("chat12Zone"));
 }
+
+/**
+ * Array/Json of chat view opened
+ */
+Chat12.openedViews = {};
 
 /**
  * chatContactList
  */
 Template.chatContactList.helpers({
   getContacts: function (event, tmpl) {
-    var sort = {};
-    sort[Chat12.getContactOrderField()] = 1;
-    return Meteor.users.find({_id: {$in: Chat12.getContacts(this.userId)}}, {sort: sort});
+    return Meteor.users.find({_id: {$in: Chat12.getContacts(this.userId)}}, {sort: Chat12.getContactOrder()});
+  },
+  getRooms: function (event, tmpl) {
+    return Chat12.Chat12Rooms.find({participants: {$in: [Meteor.userId()]}}, {sort: {name: 1}});
   },
   getListClass: function (event, tmpl) { return Chat12.getContactsListClass()}
+});
+
+Template.chatContactList.events({
+  'click .chat12CreateRoomButton': function (event, tmpl) {
+    $("#chat12RoomCreationOverlay").removeClass("hide");
+  }
 });
 
 /**
@@ -93,12 +114,14 @@ Template.chatContainer.destroyed = function () {
 
 Template.chatContainer.events({
   'click .buttonMinimize': function (event, tmpl) {
-    tmpl.$(".setting").toggle(300);
+    //tmpl.$(".setting").toggle(300);
     tmpl.$(".chat-box").toggle(300).scrollTop(4000000);
     tmpl.$(".messagebox").toggle(300);
   },
   'click .buttonClose': function (event,tmpl) {
-    tmpl.$(".chat-container").remove();
+    //tmpl.$(".chat-container").remove();
+    //UI.DomBackend.removeElement("#chat-container-" + tmpl.data._id);
+    Blaze.remove(Chat12.openedViews[tmpl.data._id]);
   },
   'submit .chat12MessageSendForm': function (event, tmpl) {
     event.stopImmediatePropagation();

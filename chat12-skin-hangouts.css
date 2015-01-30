@@ -120,19 +120,24 @@
   width: 100%;
   overflow-y: auto;
 }
+
+.chat12ContactList li,
 .chat-box li {
   padding: 5px;
   overflow: hidden;
-  display: flex;
+  display: flex !important;
 }
+.chat12ContactList .avatar-icon,
 .chat-box .avatar-icon {
   width: 37px;
   position: relative;
 }
+.chat12ContactList .avatar-icon img,
+.chat12ContactList .avatar-icon i,
 .chat-box .avatar-icon img {
   display: block;
   width: 100%;
-  background-color:#444;
+  /*background-color:#444;*/
 }
 .another .avatar-icon:after {
   content: '';
@@ -188,6 +193,7 @@
   padding: 5px;
 }
 .setting{
+  display:none;
   color: #666;
   background-color: #DDD;
   font-size:  18px;
@@ -205,6 +211,94 @@
   margin-left: 8px;
   cursor: Pointer;
 }
+
+/* Contact List */
+ol.chat12ContactsList {
+  padding: 0px;
+  margin: 0px;
+}
+
+.chat12Contact {
+  display: block;
+  position: relative;
+  float: left;  
+  width: 100%;
+  height: 3em;
+  padding: 4px 6px;
+  margin: 0px 0px;
+  z-index: 3;
+  overflow: hidden;
+  //-webkit-transition: font-weight .7s;
+}
+
+.chat12Contact:hover {
+  //background-color: #111;
+  font-weight: bold;
+  border-left:    3px solid;
+}
+
+.chat12Contact.online {
+  border-right:    5px solid #288F24;
+}
+
+.chat12Portrait i,
+.chat12Portrait img {
+  position: relative;
+  float: left;
+  height: 2.5em;
+  width: 2.5em;
+  border-radius: 50%;
+  margin: 0em;
+}
+
+.chat12Details {
+  position: relative;
+  float: left;
+  top: 0;
+  width: 55%;
+  margin: 0em 0 0 .75em;
+  -webkit-transition: top .5s;
+}
+
+.chat12Name,
+.chat12Description {
+  position: relative;
+  float: left;
+  clear: left;
+  margin: 0;
+  white-space:nowrap;
+}
+
+.chat12Name {
+  font-size: 1.1em;
+  font-weight: 300;
+}
+.chat12Description {
+  font-size: .8em;
+  opacity: 0.75;
+}
+
+#chat12RoomCreationOverlay {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width:100%;
+  height:100%;
+  text-align:center;
+  z-index: 1000;
+}
+#chat12RoomCreationOverlay .hide {
+  visibility: hidden;
+}
+#chat12RoomCreationOverlay > div {
+  width:300px;
+  margin: 100px auto;
+  background-color: #fff;
+  border:1px solid #000;
+  padding:15px;
+  text-align:center;
+}
+
 /*.iconicstroke-user{
   font-size: 22px;
   position: relative;

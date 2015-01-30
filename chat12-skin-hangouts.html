@@ -1,19 +1,57 @@
 <template name="chatContactList">
-  <ol class="{{getListClass}}">
+  <ol class="chat12ContactsList {{getListClass}}">
+    <li class="chat12Contact another chat12CreateRoomButton">
+      <div class="chat12Portrait">
+        <img src="{{chat12GetRoomPortrait}}">
+      </div>
+      <div class="chat12Details">
+        <p class="chat12Name">Create Room</p>
+        <p class="chat12Description">Let's go.</p>
+      </div>
+    </li>
+    {{#each getRooms}}
+      {{> chat12RoomContact}}
+    {{/each}}
     {{#each getContacts}}
       {{> chat12Contact}}
     {{/each}}
   </ol>
 </template>
 
+<template name="chat12RoomContact">
+  <li class="chat12Contact another {{#if status.online}}online{{/if}}">
+    <div class="chat12Portrait">
+      {{#if chat12GetRoomPortrait this}}
+        <img src="{{chat12GetRoomPortrait this}}">
+      {{/if}}
+    </div>
+    <div class="chat12Details">
+      <p class="chat12Name">{{name}}</p>
+      <p class="chat12Description">{{desc}}</p>
+    </div>
+  </li>
+</template>
+
 <template name="chat12Contact">
-  <li>
-    <div class='avatar-icon'>{{#if chat12GetContactAvatar this}}<img src='{{chat12GetContactAvatar this}}'>{{/if}}</div>
-    <div class='chat12ContactName'>{{chat12GetContactName this}}</div>
+  <li class="chat12Contact another {{#if status.online}}online{{/if}}">
+    <div class="chat12Portrait">
+      {{#if chat12GetContactPortrait this}}
+        <img src="{{chat12GetContactPortrait this}}">
+      {{/if}}
+    </div>
+    <div class="chat12Details">
+      <p class="chat12Name">{{chat12GetContactName this}}</p>
+      <p class="chat12Description">{{chat12GetContactDescription this}}</p>
+    </div>
   </li>
 </template>
 
 <template name="chatZoneBottom">
+  <div id="chat12RoomCreationOverlay" class="hide">
+    <div>
+      {{> quickForm collection="Chat12.Chat12Rooms" id="insertChat12RoomForm" type="insert" template="plain-fieldset" omitFields="closed,creationDate,creator"}}
+    </div>
+  </div>
   <div id="chat12Zone" class="chat-zone"></div>
 </template>
 
@@ -55,7 +93,7 @@
 
 <template name="chatMessage">
   <li class='{{#if chat12Itsme from}}me{{else}}another{{/if}}'>
-    {{#if chat12GetContactAvatar from}}<div class='avatar-icon'><img src='{{chat12GetContactAvatar from}}'></div>{{/if}}
+    {{#if chat12GetContactPortrait from}}<div class='avatar-icon'><img src='{{chat12GetContactPortrait from}}'></div>{{/if}}
     <div class='messages'>
       <p>{{msg}}</p>
       <time datetime='{{date}}'>{{chat12GetContactName from}} • {{getCalendarDate date}}</time>
