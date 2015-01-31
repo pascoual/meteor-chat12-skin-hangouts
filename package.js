@@ -8,7 +8,7 @@ Package.on_use(function (api) {
   api.versionsFrom('METEOR@1.0');
 
   api.use(['livedata', 'deps', 'templating', 'ui', 'blaze', 'ejson', 'reactive-var','jquery','raix:handlebar-helpers','fortawesome:fontawesome','mizzao:user-status', 'pascoual:chat12'], 'client');
-  api.use(['aldeed:simple-schema','aldeed:collection2','aldeed:autoform']);
+  api.use(['aldeed:simple-schema','aldeed:collection2','aldeed:autoform@4.2.2']);
 
   api.imply('pascoual:chat12');
   api.imply('mizzao:user-status')

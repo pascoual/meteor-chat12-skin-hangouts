@@ -33,10 +33,15 @@ Template.registerHelper("chat12Itsme", function (user) {
  * Global tools
  */
 Chat12.createChatContainer = function (to) {
-  if (typeof to === "string")
-    to = Meteor.users.findOne({_id: to});
-  if ($('#chat-container-' + to._id).length === 0)
-    Chat12.openedViews[to._id] = Blaze.renderWithData(Template.chatContainer, to, document.getElementById("chat12Zone"));
+  var contactOrRoom = to;
+  if (typeof to === "string") {
+    contactOrRoom = Meteor.users.findOne({_id: to});
+    // if it's a Room
+    if (typeof contactOrRoom === "undefined")
+      contactOrRoom = Chat12.Chat12Rooms.findOne({_id: to});
+  }
+  if ($('#chat-container-' + contactOrRoom._id).length === 0)
+    Chat12.openedViews[contactOrRoom._id] = Blaze.renderWithData(Template.chatContainer, contactOrRoom, document.getElementById("chat12Zone"));
 }
 
 /**
@@ -64,6 +69,15 @@ Template.chatContactList.events({
 });
 
 /**
+ * chatRoomList
+ */
+Template.chat12RoomContact.events({
+  'click li': function (event, tmpl) {
+    Chat12.createChatContainer(tmpl.data);
+  }
+});
+
+/**
  * chatContactList
  */
 Template.chat12Contact.events({
@@ -79,16 +93,29 @@ Template.chatZoneBottom.created = function () {
   // subscribe
   this.subscriptions = [
     Meteor.subscribe("chat12GetOnes"),
-    Meteor.subscribe("chat12GetUnreadMessages")
+    Meteor.subscribe("chat12GetUnreadMessages"),
+    Meteor.subscribe("chat12GetRooms"),
+    Meteor.subscribe("chat12GetRoomUnreadMessages")
   ];
-  Chat12.Chat121Msgs.find({
-    to: Meteor.userId(),
-    readBy: {$nin: [Meteor.userId()]}
-  }).observe({
-    added: function (doc) {
-      // if chat div for doc.from does not exist => create it !
-      Chat12.createChatContainer(doc.from);
-    }
+  Tracker.autorun(function () {
+    Chat12.Chat121Msgs.find({
+      to: Meteor.userId(),
+      readBy: {$nin: [Meteor.userId()]}
+    }).observe({
+      added: function (doc) {
+        // if chat div for doc.from does not exist => create it !
+        Chat12.createChatContainer(doc.from);
+      }
+    });
+    Chat12.Chat12RoomMsgs.find({
+      //room: {$in: Chat12.getRooms(Meteor.userId())},
+      readBy: {$nin: [Meteor.userId()]}
+    }).observe({
+      added: function (doc) {
+        // if chat div for doc.from does not exist => create it !
+        Chat12.createChatContainer(doc.room);
+      }
+    });
   });
 };
 
@@ -97,12 +124,27 @@ Template.chatZoneBottom.destroyed = function () {
   this.subscriptions.forEach(function (subscription) {subscription.stop()});
 };
 
+/* remove create room modal when created */
+AutoForm.hooks({
+  insertChat12RoomForm: {
+    onSuccess: function(operation, result, template) {
+      $("#chat12RoomCreationOverlay").addClass("hide");
+    }
+  }
+});
+
 /**
  * chatContainer
  */
 Template.chatContainer.created = function () {
   // subscribe
-  this.subscriptions = [Meteor.subscribe("chat12GetMessages", this.data._id)];
+  // it's a room
+  var publishName = null;
+  if (this.data.participants)
+    publishName = "chat12GetRoomMessages";
+  else
+    publishName = "chat12GetMessages";
+  this.subscriptions = [Meteor.subscribe(publishName, this.data._id)];
 };
 Template.chatContainer.rendered = function () {
   //this.$(".chat-box").scrollTop(this.$(".chat-box").height() + 100);
@@ -126,11 +168,19 @@ Template.chatContainer.events({
   'submit .chat12MessageSendForm': function (event, tmpl) {
     event.stopImmediatePropagation();
     event.preventDefault();
-    Chat12.Chat121Send(tmpl.data._id, tmpl.$('.chat12MessageInput').val());
+    // default: 121
+    var sendMethode = Chat12.Chat121Send;
+    // if it's a room
+    if (tmpl.data.participants)
+      sendMethode = Chat12.Chat12RoomSend;
+    sendMethode(tmpl.data._id, tmpl.$('.chat12MessageInput').val());
     tmpl.$('.chat12MessageInput').val('');
   },
   'focus .chat12MessageInput': function (event, tmpl) {
-    Chat12.Chat121SetRead(tmpl.data._id);
+    var setReadMethode = Chat12.Chat121SetRead;
+    if (tmpl.data.participants)
+      setReadMethode = Chat12.Chat12RoomSetRead;
+    setReadMethode(tmpl.data._id);
   }
   /*
    * Try to get chat-container resizable via mouse :
@@ -142,9 +192,20 @@ Template.chatContainer.events({
 
 Template.chatContainer.helpers({
   getContact: function (id) {
+    // it' a Room
+    if (this.participants)
+      return this;
+    // It's a contact
     return Meteor.users.findOne({_id: id});
   },
   hasUnreadMsg: function () {
+    // it's a Room
+    if (this.participants)
+      return Chat12.Chat12RoomMsgs.find({
+        room: this._id,
+        readBy: {$nin: [Meteor.userId()]}
+      }).count() > 0;
+    // It's a contact
     return Chat12.Chat121Msgs.find({
       from: this._id,
       to: Meteor.userId(),
@@ -152,6 +213,12 @@ Template.chatContainer.helpers({
     }).count() > 0;
   },
   getMessages: function (event, tmpl) {
+    // it's a Room
+    if (this.participants)
+      return Chat12.Chat12RoomMsgs.find({
+        room: this._id,
+      }, {sort: {date: 1}});
+    // it's a contact
     return Chat12.Chat121Msgs.find({
       $or: [{
         from: Meteor.userId(),

@@ -1,14 +1,16 @@
 <template name="chatContactList">
   <ol class="chat12ContactsList {{getListClass}}">
-    <li class="chat12Contact another chat12CreateRoomButton">
-      <div class="chat12Portrait">
-        <img src="{{chat12GetRoomPortrait}}">
-      </div>
-      <div class="chat12Details">
-        <p class="chat12Name">Create Room</p>
-        <p class="chat12Description">Let's go.</p>
-      </div>
-    </li>
+    {{#if chat12RoomCreateAllow}}
+      <li class="chat12Contact another chat12CreateRoomButton">
+        <div class="chat12Portrait">
+          <img src="{{chat12GetRoomPortrait}}">
+        </div>
+        <div class="chat12Details">
+          <p class="chat12Name">Create Room</p>
+          <p class="chat12Description">Let's go.</p>
+        </div>
+      </li>
+    {{/if}}
     {{#each getRooms}}
       {{> chat12RoomContact}}
     {{/each}}
@@ -61,7 +63,13 @@
     <header class='top-header {{#if status.online}}connected{{/if}} {{#if hasUnreadMsg}}unread{{/if}}'>
       <div class='left'>
         <i class="fa fa-comments-o"></i>
-        <span class='top-header-tit'>{{chat12GetContactName this}}</span>
+        <span class='top-header-tit'>
+          {{#if participants}}
+            {{name}}
+          {{else}}
+            {{chat12GetContactName this}}
+          {{/if}}
+        </span>
       </div>
       <div class='right'>
         <i class="fa fa-minus clickable buttonMinimize"></i>
