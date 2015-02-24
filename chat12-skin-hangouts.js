@@ -91,13 +91,13 @@ Template.chat12Contact.events({
  */
 Template.chatZoneBottom.created = function () {
   // subscribe
-  this.subscriptions = [
-    Meteor.subscribe("chat12GetOnes"),
-    Meteor.subscribe("chat12GetUnreadMessages"),
-    Meteor.subscribe("chat12GetRooms"),
-    Meteor.subscribe("chat12GetRoomUnreadMessages")
-  ];
   Tracker.autorun(function () {
+    this.subscriptions = [
+      Meteor.subscribe("chat12GetOnes"),
+      Meteor.subscribe("chat12GetUnreadMessages", Meteor.users.find().count()),
+      Meteor.subscribe("chat12GetRooms"),
+      Meteor.subscribe("chat12GetRoomUnreadMessages", Chat12.Chat12Rooms.find().count())
+    ];
     Chat12.Chat121Msgs.find({
       to: Meteor.userId(),
       readBy: {$nin: [Meteor.userId()]}
@@ -105,6 +105,8 @@ Template.chatZoneBottom.created = function () {
       added: function (doc) {
         // if chat div for doc.from does not exist => create it !
         Chat12.createChatContainer(doc.from);
+        // call site callback
+        Chat12.onMsgCallBack(doc, Meteor.users.findOne({_id: doc.from}));
       }
     });
     Chat12.Chat12RoomMsgs.find({
@@ -114,6 +116,8 @@ Template.chatZoneBottom.created = function () {
       added: function (doc) {
         // if chat div for doc.from does not exist => create it !
         Chat12.createChatContainer(doc.room);
+        // call site callback
+        Chat12.onMsgCallBack(doc, Chat12.Chat12Rooms.findOne({_id: doc.room}));
       }
     });
   });
