@@ -94,8 +94,10 @@ Template.chatZoneBottom.created = function () {
   Tracker.autorun(function () {
     this.subscriptions = [
       Meteor.subscribe("chat12GetOnes"),
+      // add not needed argument to recompute subscription in case of new user
       Meteor.subscribe("chat12GetUnreadMessages", Meteor.users.find().count()),
       Meteor.subscribe("chat12GetRooms"),
+      // add not needed argument to recompute subsciption in case of new room
       Meteor.subscribe("chat12GetRoomUnreadMessages", Chat12.Chat12Rooms.find().count())
     ];
     Chat12.Chat121Msgs.find({
