@@ -102,9 +102,9 @@
 </template>
 
 <template name="chatMessage">
-  <li class='{{#if chat12Itsme from}}me{{else}}another{{/if}}'>
+<li class='{{#if chat12Itsme from}}me{{else}}another{{/if}}'>
     {{#if chat12GetContactPortrait from}}<div class='avatar-icon'><img src='{{chat12GetContactPortrait from}}'></div>{{/if}}
-    <div class='messages'>
+    <div class='messages {{#if chat12Itsme from}}{{#if unread}}unreadSender{{/if}}{{else}}{{#if iHaveNotReadIt}}unreadReceiver{{/if}}{{/if}}'>
       <p>{{msg}}</p>
       <time datetime='{{date}}'>{{chat12GetContactName from}} • {{getCalendarDate date}}</time>
     </div>

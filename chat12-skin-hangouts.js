@@ -127,7 +127,8 @@ Template.chatZoneBottom.created = function () {
 
 Template.chatZoneBottom.destroyed = function () {
   // unsubscribe
-  this.subscriptions.forEach(function (subscription) {subscription.stop()});
+  if (this.subscriptions)
+    this.subscriptions.forEach(function (subscription) {subscription.stop()});
 };
 
 /* remove create room modal when created */
@@ -243,3 +244,15 @@ Template.chatContainer.helpers({
 Template.chatMessage.rendered = function () {
   this.$('li').parent('ol').scrollTop(4000000);
 }
+Template.chatMessage.helpers({
+  unread: function () {
+    if (this.readBy)
+      return this.readBy.length === 0;
+  },
+  iHaveNotReadIt: function () {
+    if (this.readBy)
+      if (this.readBy.indexOf(Meteor.userId()) === -1)
+        return true;
+    return false;
+  }
+});

@@ -12,7 +12,7 @@
   font-family: 'Typicons', sans-serif;
 }*/
 .chat-zone {
-  z-index: 1040;
+  z-index: 999;
   position:fixed;
   bottom:0;
   right:0;
@@ -187,6 +187,12 @@
 .messages time {
   font-size: 11px;
   color: #999;
+}
+.messages.unreadSender {
+  background-color: #FFFF83;
+}
+.messages.unreadReceiver {
+  background-color: #FCC;
 }
 .chat12MessageInput {
   width: 100%;
