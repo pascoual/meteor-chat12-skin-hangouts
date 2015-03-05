@@ -21,7 +21,7 @@ Template.registerHelper("chat12GetContactDescription", function (user) {
 });
 Template.registerHelper("chat12GetUnreadNumber", function (from) {
   from = from ? {from: from} : {};
-  return Chat12.Chat121Msgs.find(_.extend({to: Meteor.userId(), readBy: {$nin: [Meteor.userId()]}}, from)).count();
+  return Chat12.Chat121Msgs.find(_.extend({to: Meteor.userId(), readBy: {$nin: [Meteor.userId()]}, removed: {$ne: true}}, from)).count();
 });
 Template.registerHelper("chat12Itsme", function (user) {
   if (typeof user === "string")
@@ -42,6 +42,16 @@ Chat12.createChatContainer = function (to) {
   }
   if ($('#chat-container-' + contactOrRoom._id).length === 0)
     Chat12.openedViews[contactOrRoom._id] = Blaze.renderWithData(Template.chatContainer, contactOrRoom, document.getElementById("chat12Zone"));
+}
+
+Chat12.setReadIfChatInputFocused = function (msg, chatContainer) {
+  //if ($('#chat-container-' +  chatContainer + ' input:focus').length === 1) {
+  if ($(document.activeElement).parents('#chat-container-' + chatContainer).length === 1) {
+    var setReadMethode = Chat12.Chat121SetRead;
+    if (msg.room)
+      setReadMethode = Chat12.Chat12RoomSetRead;
+    setReadMethode(chatContainer);
+  }
 }
 
 /**
@@ -107,6 +117,8 @@ Template.chatZoneBottom.created = function () {
       added: function (doc) {
         // if chat div for doc.from does not exist => create it !
         Chat12.createChatContainer(doc.from);
+        // set as read if input for this chat is focused
+        Chat12.setReadIfChatInputFocused(doc, doc.from);
         // call site callback
         Chat12.onMsgCallBack(doc, Meteor.users.findOne({_id: doc.from}));
       }
@@ -118,6 +130,8 @@ Template.chatZoneBottom.created = function () {
       added: function (doc) {
         // if chat div for doc.from does not exist => create it !
         Chat12.createChatContainer(doc.room);
+        // set as read if input for this chat is focused
+        Chat12.setReadIfChatInputFocused(doc, doc.room);
         // call site callback
         Chat12.onMsgCallBack(doc, Chat12.Chat12Rooms.findOne({_id: doc.room}));
       }
