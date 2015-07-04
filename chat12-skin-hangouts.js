@@ -178,13 +178,15 @@ Template.chatContainer.destroyed = function () {
 Template.chatContainer.events({
   'click .buttonMinimize': function (event, tmpl) {
     //tmpl.$(".setting").toggle(300);
-    tmpl.$(".chat-box").toggle(300).scrollTop(4000000);
+    tmpl.$(".chat-box").toggle(300).scrollTop(4000000).delay(500).scrollTop(4000000);
     tmpl.$(".messagebox").toggle(300);
+    event.stopImmediatePropagation();
   },
   'click .buttonClose': function (event,tmpl) {
     //tmpl.$(".chat-container").remove();
     //UI.DomBackend.removeElement("#chat-container-" + tmpl.data._id);
     Blaze.remove(Chat12.openedViews[tmpl.data._id]);
+    event.stopImmediatePropagation();
   },
   'submit .chat12MessageSendForm': function (event, tmpl) {
     event.stopImmediatePropagation();
@@ -196,12 +198,18 @@ Template.chatContainer.events({
       sendMethode = Chat12.Chat12RoomSend;
     sendMethode(tmpl.data._id, tmpl.$('.chat12MessageInput').val());
     tmpl.$('.chat12MessageInput').val('');
+    event.stopImmediatePropagation();
   },
   'focus .chat12MessageInput': function (event, tmpl) {
     var setReadMethode = Chat12.Chat121SetRead;
     if (tmpl.data.participants)
       setReadMethode = Chat12.Chat12RoomSetRead;
     setReadMethode(tmpl.data._id);
+    event.stopImmediatePropagation();
+  },
+  'click': function (event, tmpl) {
+    //console.log('hooooooo');
+    tmpl.$('.chat12MessageInput').focus();
   }
   /*
    * Try to get chat-container resizable via mouse :
@@ -257,6 +265,9 @@ Template.chatContainer.helpers({
  */ 
 Template.chatMessage.rendered = function () {
   this.$('li').parent('ol').scrollTop(4000000);
+  Meteor.setTimeout(function () {
+    this.$('li').parent('ol').scrollTop(4000000);
+  }, 500);
 }
 Template.chatMessage.helpers({
   unread: function () {
