@@ -210,6 +210,9 @@ Template.chatContainer.events({
   'click': function (event, tmpl) {
     //console.log('hooooooo');
     tmpl.$('.chat12MessageInput').focus();
+  },
+  'click .chat12MessageInput': function (e, tmpl) {
+    tmpl.$('li').parent('ol').scrollTop(4000000);
   }
   /*
    * Try to get chat-container resizable via mouse :
