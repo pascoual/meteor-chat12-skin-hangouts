@@ -11,6 +11,11 @@
 [class*="typicons-"]:before {
   font-family: 'Typicons', sans-serif;
 }*/
+.bodyNotScrollable {
+  position: fixed; 
+  overflow-y: scroll;
+  width: 100%;
+}
 .chat-zone {
   z-index: 999;
   position:fixed;
@@ -53,19 +58,25 @@
   box-shadow:         0px 1px 5px 0px rgba(50, 50, 50, 0.75);
 }
 .buttonMinimize::before,
-.buttonClose::before{
+.buttonClose::before,
+.buttonToDown::before {
     content:"";
     display:block;
     height:40px;
     width:35px;
     position:absolute;
     top:-10px;
+    cursor: Pointer;
 }
 .buttonMinimize::before{
   left:-20px;
 }
 .buttonClose::before{
   left:-11px;
+}
+.buttonToDown::before {
+  left: -15px;
+  top: -15px;
 }
 .buttonMinimize,
 .buttonClose {
@@ -74,7 +85,11 @@
   position:relative;
   overflow:visible !important;
 }
-.
+.buttonToDown {
+  position: absolute;
+  top: 300px;
+  left: 270px;
+}
 .clickable:hover {
   cursor: Pointer;
 }

@@ -176,6 +176,12 @@ Template.chatContainer.destroyed = function () {
 };
 
 Template.chatContainer.events({
+  'mouseenter .chat-container': function (event, tmpl) {
+    $('body').addClass('bodyNotScrollable');
+  },
+  'mouseleave .chat-container': function (event, tmpl) {
+    $('body').removeClass('bodyNotScrollable');
+  },
   'click .buttonMinimize': function (event, tmpl) {
     //tmpl.$(".setting").toggle(300);
     tmpl.$(".chat-box").toggle(300).scrollTop(4000000).delay(500).scrollTop(4000000);
@@ -187,6 +193,10 @@ Template.chatContainer.events({
     //UI.DomBackend.removeElement("#chat-container-" + tmpl.data._id);
     Blaze.remove(Chat12.openedViews[tmpl.data._id]);
     event.stopImmediatePropagation();
+    $('body').removeClass('bodyNotScrollable');
+  },
+  'click .buttonToDown': function (event, tmpl) {
+    tmpl.$('ol').scrollTop(4000000);
   },
   'submit .chat12MessageSendForm': function (event, tmpl) {
     event.stopImmediatePropagation();
